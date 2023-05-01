@@ -1,6 +1,7 @@
-/PairedEmojiBot/DbFiles/
+DbFiles/
 [Bb]in/
 [Oo]bj/
 .vs/
+.idea/
 [Dd]ebug/
 [Rr]elease/
