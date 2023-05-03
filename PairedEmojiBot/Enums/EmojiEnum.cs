@@ -7,5 +7,6 @@
         public static string REQUEST_HANDSHAKE_EMOJI = "\U0001FAF1";
         public static string FIST_EMOJI = "\U0000270A";
         public static string OPPOSITE_FIVE_EMOJI = "\U0001F91A";
+        public static string CRAYFISH_EMOJI = "\U0001F99E";
     }
 }

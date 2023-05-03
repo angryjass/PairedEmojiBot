@@ -7,6 +7,8 @@ namespace PairedEmojiBot.Db
     {
         public DbSet<EmojiStatistic> EmojiStatistics { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<CrayfishGameProcess> СrayfishGameProcesses { get; set; }
+
         public PairedEmojiBotContext()
         {
         }
@@ -28,6 +30,11 @@ namespace PairedEmojiBot.Db
 
 
             modelBuilder.Entity<User>()
+                .HasKey(x => x.Id);
+
+
+
+            modelBuilder.Entity<CrayfishGameProcess>()
                 .HasKey(x => x.Id);
         }
     }
