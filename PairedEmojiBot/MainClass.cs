@@ -168,6 +168,11 @@ namespace PairedEmojiBot
                             crayfishGameProcess.ApproveFirstUser = true;
                         else if (crayfishGameProcess.SecondUsername == from)
                             crayfishGameProcess.ApproveSecondUser = true;
+                        else if (crayfishGameProcess.SecondUsername == null && crayfishGameProcess.FirstUsername != from)
+                        {
+                            crayfishGameProcess.SecondUsername = from;
+                            crayfishGameProcess.ApproveSecondUser = true;
+                        }
 
                         if (crayfishGameProcess.ApproveFirstUser && crayfishGameProcess.ApproveSecondUser)
                         {

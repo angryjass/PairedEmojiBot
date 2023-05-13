@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PairedEmojiBot.Db;
 
@@ -10,9 +11,11 @@ using PairedEmojiBot.Db;
 namespace PairedEmojiBot.Migrations
 {
     [DbContext(typeof(PairedEmojiBotContext))]
-    partial class PairedEmojiBotContextModelSnapshot : ModelSnapshot
+    [Migration("20230507153247_Allow_request_for_crayfish")]
+    partial class Allow_request_for_crayfish
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.5");
