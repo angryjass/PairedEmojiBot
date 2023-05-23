@@ -2,14 +2,7 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using PairedEmojiBot.Enums;
-using Microsoft.Data.Sqlite;
-using PairedEmojiBot.Models;
 using PairedEmojiBot.Db;
-using Microsoft.EntityFrameworkCore;
-using System.Text;
-using System;
-using System.Linq;
-using PairedEmojiBot.Utils;
 using PairedEmojiBot.Concrete.InitHandlers;
 using PairedEmojiBot.Concrete.ProcessHandlers;
 
@@ -23,47 +16,30 @@ namespace PairedEmojiBot
 
         public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(update));
-            if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
+            try
             {
-                var message = update.Message;
-                if (message.Text != null && (message.Text.ToLower() == "/five" || message.Text.ToLower() == "/five@paired_emoji_bot"))
+                // TODO classifiers
+                Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(update));
+                if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
                 {
-                    await new FiveEmojiInitHandler().Handle(_context, botClient, update, cancellationToken);
+                    var message = update.Message;
+                    if (message.Text != null && (message.Text.ToLower().Contains("/crayfish")))
+                    {
+                        var task = (Task)HandlersCache.HandlersCache.Get(update.Type, message.Text.ToLower()).DynamicInvoke(_context, botClient, update, cancellationToken);
 
-                    return;
-                }
-                else if (message.Text != null && (message.Text.ToLower() == "/handshake" || message.Text.ToLower() == "/handshake@paired_emoji_bot"))
-                {
-                    await new HandshakeEmojiInitHandler().Handle(_context, botClient, update, cancellationToken);
+                        await task;
+                    }
+                    else
+                    {
+                        var task = (Task)HandlersCache.HandlersCache.Get(update.Type, message.Text.ToLower()).DynamicInvoke(_context, botClient, update, cancellationToken);
 
-                    return;
+                        await task;
+                    }
                 }
-                else if (message.Text != null && (message.Text.ToLower().Contains("/crayfish")))
-                {
-                    await new CrayfishEmojiInitHandler().Handle(_context, botClient, update, cancellationToken);
-                }
-                else if (message.Text != null && (message.Text.ToLower() == "/help" || message.Text.ToLower() == "/help@paired_emoji_bot"))
-                {
-                    await new HelpHandler().Handle(_context, botClient, update, cancellationToken);
-
-                    return;
-                }
-            }
-            else if (update.Type == Telegram.Bot.Types.Enums.UpdateType.CallbackQuery)
-            {
-                try
+                else if (update.Type == Telegram.Bot.Types.Enums.UpdateType.CallbackQuery)
                 {
                     var message = update.CallbackQuery.Message;
-                    if (message.Text == EmojiEnum.REQUEST_HANDSHAKE_EMOJI)
-                    {
-                        await new HandshakeEmojiProcessHandler().Handle(_context, botClient, update, cancellationToken);
-                    }
-                    else if (message.Text == EmojiEnum.FIVE_EMOJI)
-                    {
-                        await new FiveEmojiProcessHandler().Handle(_context, botClient, update, cancellationToken);
-                    }
-                    else if (message.ReplyMarkup != null && message.ReplyMarkup.InlineKeyboard.Any() && message.ReplyMarkup.InlineKeyboard.First().First().CallbackData == "crayfishGame")
+                    if (message.ReplyMarkup != null && message.ReplyMarkup.InlineKeyboard.Any() && message.ReplyMarkup.InlineKeyboard.First().First().CallbackData == "crayfishGame")
                     {
                         await new CrayfishEmojiProcessHandler().Handle(_context, botClient, update, cancellationToken);
                     }
@@ -71,11 +47,17 @@ namespace PairedEmojiBot
                     {
                         await new CrayfishEmojiProcess2Handler().Handle(_context, botClient, update, cancellationToken);
                     }
+                    else
+                    {
+                        var task = (Task)HandlersCache.HandlersCache.Get(update.Type, message.Text.ToLower()).DynamicInvoke(_context, botClient, update, cancellationToken);
+
+                        await task;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
 
         }

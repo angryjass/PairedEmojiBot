@@ -8,3 +8,4 @@ DbFiles/*
 /PairedEmojiBot/DbFiles/paired_emoji_bot.db-wal
 /PairedEmojiBot/DbFiles/paired_emoji_bot.db-shm
 /.vs/PairedEmojiBot/FileContentIndex/ca7291f8-1586-452a-9ac4-0ffcc3536ac8.vsidx
+/PairedEmojiBot/DbFiles/paired_emoji_bot.db

@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PairedEmojiBot;
+using PairedEmojiBot.Abstract;
 using PairedEmojiBot.Db;
+using PairedEmojiBot.HandlersCache;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 
@@ -38,6 +40,19 @@ using (var context = new PairedEmojiBotContext())
 Console.WriteLine("Миграций на бд применены");
 
 Console.WriteLine("Запущен бот " + MainClass.bot.GetMeAsync().Result.FirstName);
+
+Console.WriteLine("Заполнение кэша хэндлеров...");
+
+var types = AppDomain.CurrentDomain.GetAssemblies()
+                       .SelectMany(t => t.GetTypes())
+                       .Where(t => t.IsClass && t.IsSubclassOf(typeof(BaseEmojiHandler)));
+
+foreach (var type in types)
+{
+    var handler = (BaseEmojiHandler)Activator.CreateInstance(type) ?? throw new Exception($"Type {type.Name} is not a BaseEmojiHandler!");
+
+    HandlersCache.Add(handler.GetRequestType(), handler.GetEmojiCommand(), handler.Handle);
+}
 
 var cts = new CancellationTokenSource();
 var cancellationToken = cts.Token;
