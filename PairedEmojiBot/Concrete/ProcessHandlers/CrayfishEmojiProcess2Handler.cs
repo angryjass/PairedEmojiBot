@@ -43,7 +43,7 @@ namespace PairedEmojiBot.Concrete.ProcessHandlers
                 await botClient.EditMessageTextAsync(
                     new ChatId(crayfishGameProcess.ChatId),
                     (int)crayfishGameProcess.MessageId + 1,
-                    $"Победитель @{crayfishGameProcess.Winner} гогочет над @{loser}! СЮДА РАЧОК!");
+                    $"Победитель @{crayfishGameProcess.Winner} гогочет над @{loser}! СУДА РАЧОК!");
 
                 await context.SaveChangesAsync();
             }
