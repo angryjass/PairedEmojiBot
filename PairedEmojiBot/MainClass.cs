@@ -5,6 +5,8 @@ using PairedEmojiBot.Enums;
 using PairedEmojiBot.Db;
 using PairedEmojiBot.Concrete.InitHandlers;
 using PairedEmojiBot.Concrete.ProcessHandlers;
+using PairedEmojiBot.Classifiers;
+using PairedEmojiBot.Abstract;
 
 namespace PairedEmojiBot
 {
@@ -18,42 +20,30 @@ namespace PairedEmojiBot
         {
             try
             {
-                // TODO classifiers
                 Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(update));
-                if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
+
+                var handlers = HandlersCache.HandlersCache.Get(update.Type);
+
+                var classifiersTypes = AppDomain.CurrentDomain.GetAssemblies()
+                       .SelectMany(t => t.GetTypes())
+                       .Where(t => t.IsClass && t.IsSubclassOf(typeof(BaseClassifier)));
+
+                Delegate? classifiedHandler = null;
+
+                foreach (var classifierType in classifiersTypes) 
                 {
-                    var message = update.Message;
-                    if (message.Text != null && (message.Text.ToLower().Contains("/crayfish")))
-                    {
-                        var task = (Task)HandlersCache.HandlersCache.Get(update.Type, message.Text.ToLower()).DynamicInvoke(_context, botClient, update, cancellationToken);
+                    var classifier = (BaseClassifier)Activator.CreateInstance(classifierType, handlers, update) ?? throw new Exception($"Type {classifierType.Name} is not a BaseClassifier!");
+                    classifiedHandler = classifier.Classify();
 
-                        await task;
-                    }
-                    else
-                    {
-                        var task = (Task)HandlersCache.HandlersCache.Get(update.Type, message.Text.ToLower()).DynamicInvoke(_context, botClient, update, cancellationToken);
-
-                        await task;
-                    }
+                    if (classifiedHandler != null) break;
                 }
-                else if (update.Type == Telegram.Bot.Types.Enums.UpdateType.CallbackQuery)
-                {
-                    var message = update.CallbackQuery.Message;
-                    if (message.ReplyMarkup != null && message.ReplyMarkup.InlineKeyboard.Any() && message.ReplyMarkup.InlineKeyboard.First().First().CallbackData == "crayfishGame")
-                    {
-                        await new CrayfishEmojiProcessHandler().Handle(_context, botClient, update, cancellationToken);
-                    }
-                    else if (update.CallbackQuery.Data != null && update.CallbackQuery.Data.Contains("BOOM!"))
-                    {
-                        await new CrayfishEmojiProcess2Handler().Handle(_context, botClient, update, cancellationToken);
-                    }
-                    else
-                    {
-                        var task = (Task)HandlersCache.HandlersCache.Get(update.Type, message.Text.ToLower()).DynamicInvoke(_context, botClient, update, cancellationToken);
 
-                        await task;
-                    }
-                }
+                if (classifiedHandler == null)
+                    throw new Exception($"No handler for {update.Type}");
+
+                var task = (Task)classifiedHandler.DynamicInvoke(_context, botClient, update, cancellationToken);
+
+                if (task != null) await task;
             }
             catch (Exception ex)
             {

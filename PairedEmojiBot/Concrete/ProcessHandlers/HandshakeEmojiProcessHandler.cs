@@ -12,7 +12,7 @@ namespace PairedEmojiBot.Concrete.ProcessHandlers
     {
         public override string GetEmojiCommand()
         {
-            return EmojiEnum.HANDSHAKE_EMOJI;
+            return EmojiEnum.REQUEST_HANDSHAKE_EMOJI;
         }
 
         public override UpdateType GetRequestType()

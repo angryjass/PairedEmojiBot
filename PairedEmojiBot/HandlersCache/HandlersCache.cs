@@ -23,5 +23,13 @@ namespace PairedEmojiBot.HandlersCache
 
             throw new Exception($"No method for type {type} and command {command}");
         }
+
+        public static Dictionary<string, Delegate> Get(UpdateType type)
+        {
+            if (_cache.TryGetValue(type, out var value))
+                return _cache[type];
+
+            throw new Exception($"No handlers for type {type}");
+        }
     }
 }
