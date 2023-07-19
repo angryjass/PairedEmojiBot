@@ -33,7 +33,7 @@ namespace PairedEmojiBot.Concrete.InitHandlers
                 if (message.From == null)
                     throw new Exception("Message.From is null!");
 
-                var arr = message.Text.Split('@');
+                var arr = message.Text.Replace("@paired_emoji_bot", "").Split('@');
                 var firstUser = message.From.Username;
                 var secondUser = arr.Length > 1 ? arr[1].Trim() : null;
 
