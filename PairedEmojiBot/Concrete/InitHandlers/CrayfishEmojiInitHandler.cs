@@ -42,7 +42,7 @@ namespace PairedEmojiBot.Concrete.InitHandlers
                 Message? outMessage;
 
                 if (secondUser == null)
-                    outMessage = await botClient.SendTextMessageAsync(message.Chat, $"Господин @{firstUser} пожелал прожарить кого-нибудь из этой группы! Кто же осмелиться выйти с ним на поединок? Нажмите Готов, чтобы начать дуэль!", replyMarkup: getApprove);
+                    outMessage = await botClient.SendTextMessageAsync(message.Chat, $"Господин @{firstUser} пожелал прожарить кого-нибудь из этой группы! Кто же осмелится выйти с ним на поединок? Нажмите Готов, чтобы начать дуэль!", replyMarkup: getApprove);
                 else
                     outMessage = await botClient.SendTextMessageAsync(message.Chat, $"Господин @{firstUser} пожелал прожарить господина @{secondUser}! Нажмите Готов, чтобы начать дуэль!", replyMarkup: getApprove);
 
